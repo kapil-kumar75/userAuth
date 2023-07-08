@@ -1,10 +1,10 @@
 import userModel from '../models/userModel.js'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 
 export const userRegisterController = async (req, res) => {
   try {
     const {name, email, gender, password, phone} = req.body
-
     let msg = ''
     let invalid = false
 
@@ -26,16 +26,15 @@ export const userRegisterController = async (req, res) => {
     }
 
     if (invalid) {
-      res.status(201).send({
+      return res.status(201).send({
         success: false,
         message: msg,
       })
     }
 
     const existUser = await userModel.findOne({email})
-
     if (existUser) {
-      res.status(201).send({
+      return res.status(201).send({
         success: false,
         message: 'User already register',
       })
@@ -56,7 +55,7 @@ export const userRegisterController = async (req, res) => {
     })
     const user = await userData.save()
     if (user) {
-      res.status(200).send({
+      return res.status(200).send({
         success: true,
         message: 'Registration has been successfully',
         user,
@@ -64,9 +63,9 @@ export const userRegisterController = async (req, res) => {
     }
   } catch (error) {
     console.log(error)
-    res.status(500).send({
+    return res.status(500).send({
       success: false,
-      message: 'Error in user registration',
+      message: 'Something went wrong!',
     })
   }
 }
@@ -74,7 +73,7 @@ export const userRegisterController = async (req, res) => {
 export const login = async (req, res) => {
   try {
     const {email, password} = req.body
-
+    let JWT_SECRET = 'sjkdfjkasdfjkgajkds'
     let msg = ''
     let invalid = false
 
@@ -87,7 +86,7 @@ export const login = async (req, res) => {
     }
 
     if (invalid) {
-      res.status(201).send({
+      return res.status(201).send({
         success: false,
         message: msg,
       })
@@ -110,20 +109,21 @@ export const login = async (req, res) => {
         message: 'Invalid password',
       })
     }
-
+    let token = await jwt.sign({_id: existUser._id}, JWT_SECRET, {expiresIn: '7d'})
     if (existUser) {
       req.session.user_id = existUser._id
-      res.status(200).send({
+      return res.status(200).send({
         success: true,
         message: 'User login successfully',
         user: existUser,
+        token,
       })
     }
   } catch (error) {
     console.log(error)
     res.status(500).send({
       success: false,
-      message: 'Error in user login',
+      message: 'Something went wrong!',
     })
   }
 }
@@ -135,21 +135,21 @@ export const getProfile = async (req, res) => {
     const profile = await userModel.findById({_id: id}).select('-password')
 
     if (profile) {
-      res.status(200).send({
+      return res.status(200).send({
         success: true,
         profile,
       })
     } else {
-      res.status(404).send({
+      return res.status(404).send({
         success: false,
         message: 'User data not found',
       })
     }
   } catch (error) {
     console.log(error)
-    res.status(500).send({
+    return res.status(500).send({
       success: false,
-      message: 'Error in get user profile',
+      message: 'Something went wrong!',
     })
   }
 }
@@ -157,8 +157,16 @@ export const getProfile = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const {name, gender, password, status, phone} = req.body
-    const profile_pic = req.file?.filename
     const {id} = req.query
+    let profile_pic = req.file?.filename
+    const userData = await userModel.findById({_id: id})
+    if (userData) {
+      if (profile_pic === undefined) {
+        profile_pic = userData?.profile_pic
+      } else {
+        profile_pic = `http://localhost:5000/profile/${profile_pic}`
+      }
+    }
     let update = {}
     if (password !== '') {
       const salt = 10
@@ -175,18 +183,16 @@ export const updateProfile = async (req, res) => {
         {new: true}
       )
     }
-
-    await update.save()
-    res.status(201).send({
+    return res.status(201).send({
       success: true,
       message: 'Profile update successfully',
       update,
     })
   } catch (error) {
     console.log(error)
-    res.status(500).send({
+    return res.status(500).send({
       success: false,
-      message: 'Error in update profile',
+      message: 'Something went wrong!',
     })
   }
 }
@@ -194,15 +200,15 @@ export const updateProfile = async (req, res) => {
 export const logout = async (req, res) => {
   try {
     req.session.destroy()
-    res.status(201).send({
+    return res.status(201).send({
       success: true,
       message: 'User logout successfully',
     })
   } catch (error) {
     console.log(error)
-    res.status(500).send({
+    return res.status(500).send({
       success: false,
-      message: 'Error in user logout',
+      message: 'Something went wrong!',
     })
   }
 }
@@ -213,16 +219,16 @@ export const deleteProfile = async (req, res) => {
     const deleteUser = await userModel.findByIdAndDelete({_id: id})
     if (deleteUser) {
       req.session.destroy()
-      res.status(200).send({
+      return res.status(200).send({
         success: true,
         message: 'User profile deleted successfully',
       })
     }
   } catch (error) {
     console.log(error)
-    res.status(500).send({
+    return res.status(500).send({
       success: false,
-      message: 'Error in delete profile',
+      message: 'Something went wrong!',
     })
   }
 }

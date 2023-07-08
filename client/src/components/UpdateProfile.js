@@ -21,7 +21,7 @@ const UpdateProfile = () => {
 
   const getProfile = async (id) => {
     try {
-      const response = await axios.get(`${baseUrl}/profile?id=${id}`)
+      const response = await axios.get(`${baseUrl}/get-profile?id=${id}`)
       setProfile(response?.data?.profile)
       setName(response?.data?.profile?.name)
       setEmail(response?.data?.profile?.email)
@@ -53,7 +53,7 @@ const UpdateProfile = () => {
     formData.append('status', status)
     formData.append('profile_pic', profilePic)
     try {
-      const response = await axios.post(`${baseUrl}//update-profile?id=${userId}`, formData, {
+      const response = await axios.put(`${baseUrl}/update-profile?id=${userId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

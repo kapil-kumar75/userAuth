@@ -55,6 +55,15 @@ const Profile = () => {
 
       <main className=' ' style={{maxHeight: '100vh', minHeight: '80vh'}}>
         <div className='container py-5'>
+          <div className='mb-2'>
+            <img
+              src={user?.profile_pic}
+              alt='image'
+              className='border rounded'
+              width='60px'
+              height='60px'
+            />
+          </div>
           <h3>Name : {user?.name}</h3>
           <h4>Email : {user?.email}</h4>
           <h3>Phone : {user?.phone}</h3>

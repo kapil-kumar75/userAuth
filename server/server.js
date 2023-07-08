@@ -6,6 +6,7 @@ import path from 'path'
 import userRouters from './routers/userRouters.js'
 import bodyParser from 'body-parser'
 import cookieParser from 'cookie-parser'
+
 const app = express()
 
 import {fileURLToPath} from 'url'
@@ -19,8 +20,6 @@ app.use('/profile', express.static('public/profile'))
 app.set('view engine', 'ejs')
 app.set('views', __dirname + '/views')
 app.use(express.static(__dirname + '/public'))
-
-
 // middleware
 app.use(
   session({

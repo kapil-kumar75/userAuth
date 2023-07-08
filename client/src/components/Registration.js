@@ -11,8 +11,11 @@ const Registration = () => {
   const [gender, setGender] = useState('')
   const [password, setPassword] = useState('')
   const [phone, setPhone] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const navigate = useNavigate()
+
+  // Sorry! We did not find any active policy associated with this mobile number. Kindly write to us at techsupport@nivabupa.com with your policy details.
 
   const handleFormSubmit = async (e) => {
     e.preventDefault()
@@ -28,6 +31,7 @@ const Registration = () => {
     // formData.append('password', password)
     // formData.append('phone', phone)
     try {
+      setLoading(true)
       const response = await axios.post(`${baseUrl}/register`, {
         name,
         email,
@@ -37,12 +41,15 @@ const Registration = () => {
       })
 
       if (response.status === 200) {
+        setLoading(false)
         toast(response?.data?.message)
         navigate('/login')
       } else {
+        setLoading(false)
         toast(response?.data?.message)
       } // Handle success response
     } catch (error) {
+      setLoading(false)
       console.error(error) // Handle error
     }
   }
@@ -146,18 +153,6 @@ const Registration = () => {
             onChange={(e) => setPhone(e.target.value)}
           />
         </div>
-        {/* <div className='mb-2'>
-          <label htmlFor='profilePic' className='form-label'>
-            Profile Picture
-          </label>
-          <input
-            type='file'
-            className='form-control'
-            id='profilePic'
-            name='profile_pic'
-            onChange={(e) => setProfilePic(e.target.files[0])}
-          />
-        </div> */}
         <div className='d-flex flex-column '>
           <Link to='/login' className='text-decoration-none'>
             You haven an account
