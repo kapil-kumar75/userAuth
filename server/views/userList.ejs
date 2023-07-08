@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User List</title>
+  <!-- Include Bootstrap CSS -->
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body>
+
+<div style="margin-bottom: 10px;">
+    <h3 class="text-center">User List</h3>
+    <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">First</th>
+            <th scope="col">Email</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+            <% 
+            if(users?.length>0){
+                for(let i=0;i < users?.length;i++){
+                  %>
+                  <tr>
+                    <td><%= i+1 %></td>
+                    <td><%= users[i]?.name %></td>
+                    <td><%= users[i]?.email %></td>
+                    <td><%= users[i]?.phone %></td>
+                    <td><%= users[i]?.status === 0 ? 'In Active' : users?.status === 1 ? 'Active' : 'Pending' %></td>
+                  </tr>
+                  <%
+                    }
+                      }else{
+                        %>
+                        <tr>
+                          <td colspan="5">User Not Found</td>
+                        </tr>
+                        <%
+                      }
+                      %>
+        </tbody>
+    </table>
+</div>
+
+  <script src="/js/bootstrap.min.js"></script>
+</body>
+</html>
